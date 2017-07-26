@@ -51,6 +51,15 @@ export class ArticlesProvider {
       console.log(this.articles);
     });
   }
+
+  removeArticle(nid: string) {
+    let headers = new Headers();
+    headers.append("Accept", 'application/vnd.api+json');
+    headers.append('Content-Type', 'application/vnd.api+json' );
+
+    let options = new RequestOptions({ headers: headers });
+    this.http.get(this.url);
+  }
 }
 
 class SimpleArticle {
