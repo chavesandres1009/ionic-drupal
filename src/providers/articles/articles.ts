@@ -22,8 +22,6 @@ export class ArticlesProvider {
 
   loadAllArticles() : any {
     let headers = new Headers();
-    headers.append("Access-Control-Allow-Origin", "*");
-    headers.append("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     return this.http.get(this.url).map(res => res.json());
   }
 
@@ -36,12 +34,6 @@ export class ArticlesProvider {
     
     let request = new ArticlesAddRequest(title, body);
 
-    let postParams = {
-      title: 'foo',
-      body: 'bar',
-      userId: 1
-    }
-
     console.log(request.getRequest());
     this.http.post(this.url, JSON.stringify(request.getRequest()), options)
       .subscribe( res => {
@@ -50,9 +42,11 @@ export class ArticlesProvider {
   }
 
   loadArticles() {
+    this.articles = [];
     let request = this.loadAllArticles().subscribe((data) => {
+      console.log(data);
       data.data.forEach(element => {
-        this.articles.push(new SimpleArticle(element.attributes.title, element.attributes.body.value));
+        this.articles.push(new SimpleArticle(element.attributes.nid, element.attributes.title, element.attributes.body.value));
       });
       console.log(this.articles);
     });
@@ -62,8 +56,9 @@ export class ArticlesProvider {
 class SimpleArticle {
   title: string;
   body: string;
+  nid: string;
 
-  constructor(title: string, body: string) {
+  constructor(nid: string, title: string, body: string) {
     this.title = title;
     this.body = body;
   }

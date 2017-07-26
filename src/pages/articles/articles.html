@@ -19,7 +19,11 @@
 
 
   <ion-content padding>
-    <ion-card *ngFor="let article of articles">
+    <ion-refresher (ionRefresh)="refresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <ion-card *ngFor="let article of articles" (click)="presentActionSheet()">
       <ion-card-header>
       {{ article.title }}  
       </ion-card-header>
