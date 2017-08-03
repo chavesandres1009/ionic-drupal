@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ModalController, ActionSheetController } from 'ionic-angular';
 import { ArticlesProvider } from '../../providers/articles/articles';
-import { AddArticlePage } from '../add-article/add-article';
+import { AddEditArticlePage } from '../add-edit-article/add-edit-article';
 /**
  * Generated class for the ArticlesPage page.
  *
@@ -12,7 +12,6 @@ import { AddArticlePage } from '../add-article/add-article';
 @Component({
   selector: 'page-articles',
   templateUrl: 'articles.html',
-  providers: [ArticlesProvider]
 })
 export class ArticlesPage {
 
@@ -27,17 +26,27 @@ export class ArticlesPage {
   }
 
   popUpModal() {
-    let modal = this.modalCtrl.create(AddArticlePage);
+    let modal = this.modalCtrl.create(AddEditArticlePage);
     modal.present();
   }
 
   refresh(refresher : any) {
-    this.articlesProvider.loadArticles();
-    this.articles = this.articlesProvider.articles;
-    refresher.complete();
+    this.articlesProvider.load(true).subscribe(() => {
+      this.articles = this.articlesProvider.articles;
+      refresher.complete();
+    });
+  }
+
+  removeArticle(nid: string) {
+    this.articlesProvider.removeArticle(nid);
+  }
+
+  editArticle(nid: string) {
+    let modal = this.modalCtrl.create(AddEditArticlePage, {nid: nid});
+    modal.present();
   }
   
-  presentActionSheet() {
+  presentActionSheet(nid: string) {
     let actionSheet = this.actionSheetCtrl.create({
       title: 'Article',
       buttons: [
@@ -45,12 +54,16 @@ export class ArticlesPage {
           text: 'Edit',
           role: 'edition',
           handler: () => {
-            console.log('Edit clicked');
+            console.log('Edit clicked ' + nid);
+            this.articlesProvider.getArticle(nid);
+                        this.editArticle(nid);
+
           }
         },{
           text: 'Remove',
           handler: () => {
-            console.log('Remove clicked');
+            console.log('Remove clicked: Article: ' + nid);
+            this.removeArticle(nid);
           }
         },{
           text: 'Cancel',

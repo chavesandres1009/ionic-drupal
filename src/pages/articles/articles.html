@@ -23,7 +23,7 @@
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
 
-    <ion-card *ngFor="let article of articles" (click)="presentActionSheet()">
+    <ion-card *ngFor="let article of articles" (click)="presentActionSheet(article.nid)">
       <ion-card-header>
       {{ article.title }}  
       </ion-card-header>
