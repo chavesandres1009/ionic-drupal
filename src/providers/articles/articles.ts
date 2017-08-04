@@ -23,7 +23,7 @@ export class ArticlesProvider {
 
   loadAllArticles() : any {
     let sort = 'sort=-nid';
-    let headers = new Headers();
+
     return this.http.get(this.url + '?' + sort).map(res => {
       let response = res.json();
       response.data.forEach((element) => {
@@ -61,10 +61,7 @@ export class ArticlesProvider {
       }
     }
 
-    this.http.post(this.url, JSON.stringify(request), options)
-      .subscribe( res => {
-        console.log(res);
-      });
+    return this.http.post(this.url, JSON.stringify(request), options);
   }
 
   removeArticle(nid: string) {
@@ -73,7 +70,7 @@ export class ArticlesProvider {
     headers.append('Content-Type', 'application/vnd.api+json' );
     headers.append('Authorization', 'YXBpOmFwaQ==');
     let options = new RequestOptions({ headers: headers });
-    this.http.delete(this.url + '/' + nid, options).subscribe(res => { console.log(res); });
+    return this.http.delete(this.url + '/' + nid, options);
   }
 
   editArticle(nid: string, title: string, body: string) {
@@ -94,7 +91,7 @@ export class ArticlesProvider {
     headers.append('Access-Control-Allow-Methods', 'OPTIONS,GET,POST,PATCH,DELETE');
 
     let options = new RequestOptions({ headers: headers });
-    this.http.patch(this.url + '/' + nid, JSON.stringify(request), options).subscribe(res => { console.log(res); });
+    return this.http.patch(this.url + '/' + nid, JSON.stringify(request), options);
   }
 
   getArticle(nid: string) {

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ViewController } from 'ionic-angular';
+import { NavController, NavParams, ViewController, LoadingController } from 'ionic-angular';
 import { ArticlesProvider } from '../../providers/articles/articles';
 
 /**
@@ -19,7 +19,14 @@ export class AddEditArticlePage {
   body: string;
   article: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, public articleProvider: ArticlesProvider) {
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams, 
+    public viewCtrl: ViewController, 
+    public articleProvider: ArticlesProvider,
+    public loadingCtrl: LoadingController
+  ) 
+  {
     let nid = this.navParams.get('nid');
     this.article = null;
     if(nid) {
@@ -38,12 +45,37 @@ export class AddEditArticlePage {
   }
 
   saveArticle() {
-    this.articleProvider.addArticle(this.title, this.body);
-    this.dissmiss();
+    let loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+    loading.present();
+    this.articleProvider.addArticle(this.title, this.body).subscribe(
+      (res) => {
+        this.articleProvider.load(true).subscribe(
+          () => {
+            loading.dismiss();
+            this.dissmiss();
+          }
+        );
+      }
+    );
   }
 
   editArticle() {
-    this.articleProvider.editArticle(this.article.nid, this.title, this.body);
-    this.dissmiss();
+    let loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+    loading.present();
+    this.articleProvider.editArticle(this.article.nid, this.title, this.body).subscribe(
+      (res) => {
+        this.articleProvider.load(true).subscribe(
+          () => {
+            loading.dismiss();
+            this.dissmiss();
+          }
+        );
+
+      }
+    );
   }
 }

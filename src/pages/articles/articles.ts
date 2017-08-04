@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ModalController, ActionSheetController } from 'ionic-angular';
+import { NavController, NavParams, ModalController, ActionSheetController, LoadingController } from 'ionic-angular';
 import { ArticlesProvider } from '../../providers/articles/articles';
 import { AddEditArticlePage } from '../add-edit-article/add-edit-article';
 /**
@@ -15,14 +15,19 @@ import { AddEditArticlePage } from '../add-edit-article/add-edit-article';
 })
 export class ArticlesPage {
 
-  public articles : any[];
-
-  constructor(public navCtrl: NavController, public navParams: NavParams, public articlesProvider: ArticlesProvider, public modalCtrl: ModalController, public actionSheetCtrl: ActionSheetController) {
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams, 
+    public articlesProvider: ArticlesProvider, 
+    public modalCtrl: ModalController, 
+    public actionSheetCtrl: ActionSheetController,
+    public loadingCtrl: LoadingController
+  ) 
+  {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ArticlesPage');
-    this.articles = this.articlesProvider.articles;
   }
 
   popUpModal() {
@@ -32,13 +37,24 @@ export class ArticlesPage {
 
   refresh(refresher : any) {
     this.articlesProvider.load(true).subscribe(() => {
-      this.articles = this.articlesProvider.articles;
       refresher.complete();
     });
   }
 
   removeArticle(nid: string) {
-    this.articlesProvider.removeArticle(nid);
+    let loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+    loading.present();
+    this.articlesProvider.removeArticle(nid).subscribe(
+      (res) => {
+        this.articlesProvider.load(true).subscribe(
+          () => {
+            loading.dismiss();
+          }
+        );
+      }
+    );
   }
 
   editArticle(nid: string) {
@@ -56,7 +72,7 @@ export class ArticlesPage {
           handler: () => {
             console.log('Edit clicked ' + nid);
             this.articlesProvider.getArticle(nid);
-                        this.editArticle(nid);
+            this.editArticle(nid);
 
           }
         },{
